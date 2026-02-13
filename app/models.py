@@ -23,6 +23,11 @@ class SessionModel(Base):
     id = Column(String, primary_key=True, index=True) # session_id (UUID)
     candidate_id = Column(Integer, ForeignKey("candidates.id"))
     
+    # Snapshot of candidate details at the time of session
+    candidate_name = Column(String, nullable=True)
+    candidate_phone = Column(String, nullable=True)
+    candidate_email = Column(String, nullable=True)
+    
     start_time = Column(DateTime, default=datetime.utcnow)
     end_time = Column(DateTime, nullable=True)
     

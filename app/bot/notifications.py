@@ -23,11 +23,9 @@ class BotNotificationManager:
 
         message_html = self._format_hr_report(recommendation)
         
-        cv_filename = recommendation.metadata.get("cv_filename")
         keyboard = get_candidate_actions_keyboard(
             session_id=recommendation.session_id,
-            candidate_name=recommendation.candidate_name,
-            cv_filename=cv_filename
+            candidate_name=recommendation.candidate_name
         )
 
         for hr_id in hr_ids:
@@ -42,24 +40,45 @@ class BotNotificationManager:
                 print(f"Failed to send notification to HR {hr_id}: {e}")
 
     def _format_hr_report(self, rec: FinalRecommendation) -> str:
-        """Formats the bilingual HTML report for Telegram."""
+        """Formats the bilingual HTML report for Telegram with RU/UZ separation."""
         
         # Color Indicators (emojis)
         score_emoji = "🟢" if rec.final_score >= 70 else "🟡" if rec.final_score >= 50 else "🔴"
         integrity_emoji = "✅" if rec.score_breakdown.honesty_score >= 70 else "⚠️" if rec.score_breakdown.honesty_score >= 50 else "❌"
         confidence_emoji = "🎯" if rec.confidence == "high" else "⚖️" if rec.confidence == "medium" else "❓"
 
+        # Russian block
+        ru_header = f"🇷🇺 <b>НОВЫЙ КАНДИДАТ</b>\n"
+        ru_details = (
+            f"👤 <b>Кандидат:</b> {rec.candidate_name}\n"
+            f"🆔 <b>Сессия:</b> <code>{rec.session_id}</code>\n"
+            f"───────────────────\n"
+            f"{score_emoji} <b>AI Балл:</b> {rec.final_score}/100\n"
+            f"{integrity_emoji} <b>Честность:</b> {rec.score_breakdown.honesty_score}%\n"
+            f"{confidence_emoji} <b>Уверенность:</b> {rec.confidence.upper()}\n"
+            f"───────────────────\n"
+            f"<b>📊 Решение:</b> <i>{rec.decision}</i>\n"
+            f"<b>💬 Комментарий:</b> {rec.hr_comment}\n"
+        )
+
+        # Uzbek block
+        uz_header = f"🇺🇿 <b>YANGI NOMZOD</b>\n"
+        uz_details = (
+            f"👤 <b>Nomzod:</b> {rec.candidate_name}\n"
+            f"{score_emoji} <b>AI Ball:</b> {rec.final_score}/100\n"
+            f"{integrity_emoji} <b>Rostgo'ylik:</b> {rec.score_breakdown.honesty_score}%\n"
+            f"{confidence_emoji} <b>Ishonch:</b> {rec.confidence.upper()}\n"
+            f"───────────────────\n"
+            f"<b>📊 Bashorat:</b> <i>{rec.decision}</i>\n"
+            f"<b>💬 Izoh:</b> {rec.hr_comment}\n"
+        )
+
+        reasons_text = f"<b>🚨 Reasons / Sabablar:</b>\n" + "\n".join([f"• {f}" for f in rec.flags[:3]])
+
         return (
-            f"🇷🇺 <b>Новый кандидат загружен</b>\n"
-            f"🇺🇿 <b>Yangi nomzod yuklandi</b>\n\n"
-            f"<b>👤 Кандидат / Nomzod:</b> {rec.candidate_name}\n"
-            f"<b>🆔 Session:</b> <code>{rec.session_id}</code>\n"
+            f"{ru_header}\n{ru_details}\n"
+            f"<b>---------------------</b>\n\n"
+            f"{uz_header}\n{uz_details}\n"
             f"───────────────────\n"
-            f"{score_emoji} <b>AI Score / Ball:</b> {rec.final_score}/100\n"
-            f"{integrity_emoji} <b>Honesty / Rostgo'ylik:</b> {rec.score_breakdown.honesty_score}%\n"
-            f"{confidence_emoji} <b>Confidence / Ishonch:</b> {rec.confidence.upper()}\n"
-            f"───────────────────\n"
-            f"<b>📊 Prediction / Bashorat:</b> <i>{rec.decision}</i>\n"
-            f"<b>💬 AI Comment / Izoh:</b> {rec.hr_comment}\n\n"
-            f"<b>🚨 Reasons / Sabablar:</b>\n" + "\n".join([f"• {f}" for f in rec.flags[:3]])
+            f"{reasons_text}"
         )

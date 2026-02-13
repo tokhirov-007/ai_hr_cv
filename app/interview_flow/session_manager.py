@@ -93,12 +93,24 @@ class SessionManager:
                     language=candidate_lang
                 )
                 db.add(db_candidate)
-                db.flush() # Get ID
+            else:
+                # Update existing candidate details
+                db_candidate.name = candidate_name
+                db_candidate.phone = candidate_phone
+                db_candidate.cv_path = cv_path
+                db_candidate.language = candidate_lang
+            
+            db.flush() # Get ID / Commit updates
             
             # 2. Create DB Session
             db_session = SessionModel(
                 id=session_id,
                 candidate_id=db_candidate.id,
+                # SNAPSHOT: Save candidate details at this moment
+                candidate_name=candidate_name,
+                candidate_phone=candidate_phone,
+                candidate_email=candidate_email,
+                
                 status=SessionStatus.ACTIVE.value,
                 status_internal="PENDING",
                 status_public="UNDER_REVIEW",

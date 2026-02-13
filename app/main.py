@@ -587,24 +587,32 @@ async def list_sessions():
     """
     db = SessionLocal()
     try:
-        # Join SessionModel with Candidate to get name, phone, etc.
-        db_sessions = db.query(models.SessionModel).all()
+        # Sort by start_time descending (newest first)
+        db_sessions = db.query(models.SessionModel).order_by(models.SessionModel.start_time.desc()).all()
         
         results = []
         for session in db_sessions:
             candidate = db.query(models.Candidate).filter(models.Candidate.id == session.candidate_id).first()
             
+            # Use snapshot if available, else fallback to current candidate profile
+            c_name = session.candidate_name if session.candidate_name else (candidate.name if candidate else "Unknown")
+            c_email = session.candidate_email if session.candidate_email else (candidate.email if candidate else "")
+            c_phone = session.candidate_phone if session.candidate_phone else (candidate.phone if candidate else "")
+            
             results.append({
                 "session_id": session.id,
-                "candidate_name": candidate.name if candidate else "Unknown",
-                "candidate_email": candidate.email if candidate else "",
-                "candidate_phone": candidate.phone if candidate else "",
+                "candidate_name": c_name,
+                "candidate_email": c_email,
+                "candidate_phone": c_phone,
                 "candidate_lang": candidate.language if candidate else "en",
                 "status_public": session.status_public,
                 "status_internal": session.status_internal,
                 "score": session.score,
                 "decision": session.decision,
-                "cv_path": candidate.cv_path if candidate else ""
+                "cv_path": candidate.cv_path if candidate else "",
+                "questions": session.questions,
+                "answers": session.answers,
+                "start_time": session.start_time.isoformat() if session.start_time else ""
             })
         return results
     except Exception as e:

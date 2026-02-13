@@ -40,16 +40,39 @@ class ScoreEngine:
             # Base score from topics
             knowledge_base = (matches / len(expected)) * 100 if expected else 50
             
-            # Depth bonus (longer answers with technical words)
-            # Added Russian/Uzbek support for keywords
+            # Expanded Technical Keywords (RU/UZ/EN)
             technical_keywords = [
-                "implementation", "performance", "complexity", "architecture", "pattern", "logic",
-                "реализация", "производительность", "сложность", "архитектура", "паттерн", "логика",
-                "amalga oshirish", "unumdorlik", "murakkablik", "arxitektura", "andoza", "mantiq"
+                # EN
+                "implementation", "performance", "complexity", "architecture", "pattern", "logic", "database",
+                "api", "interface", "class", "object", "function", "method", "async", "sync", "thread",
+                "deploy", "ci/cd", "testing", "unit", "integration", "rest", "graphql", "sql", "nosql",
+                # RU
+                "реализация", "производительность", "сложность", "архитектура", "паттерн", "логика", "база",
+                "интерфейс", "класс", "объект", "функция", "метод", "асинхрон", "поток", "деплой",
+                "тестирование", "юнит", "интеграция", "рест", "sql", "nosql", "данные", "сервер", "клиент",
+                "оптимизация", "кэширование", "безопасность", "авторизация", "аутентификация",
+                # UZ
+                "amalga oshirish", "unumdorlik", "murakkablik", "arxitektura", "andoza", "mantiq", "ma'lumotlar",
+                "interfeys", "sinf", "obyekt", "funktsiya", "usul", "asinxron", "oqim", "joylashtirish",
+                "sinash", "birlik", "integratsiya", "rest", "sql", "nosql", "server", "mijoz",
+                "optimallashtirish", "keshlash", "xavfsizlik", "tizim", "dastur"
             ]
-            depth_bonus = sum(5 for word in technical_keywords if word in answer.answer_text.lower())
             
-            knowledge_final = min(100.0, knowledge_base + depth_bonus)
+            # Length Heuristic (Smart Grading)
+            # If answer is detailed (>20 words) and has at least some relevance, give good score
+            word_count = len(answer.answer_text.split())
+            length_score = 0
+            if word_count > 20: 
+                length_score = 70 # Good base for detailed answer
+            elif word_count > 10:
+                length_score = 50
+            
+            # Keyword Bonus
+            keyword_hits = sum(1 for word in technical_keywords if word in answer.answer_text.lower())
+            keyword_bonus = min(30, keyword_hits * 5)
+            
+            # Combine methods: take max of (Topic Match OR Length Heuristic) + Bonus
+            knowledge_final = min(100.0, max(knowledge_base, length_score) + keyword_bonus)
             
             if knowledge_final == 0:
                 print(f"[SCORE_LOG] why_score_zero=True: Knowledge score 0 for Question {answer.question_id}. Answer: '{answer.answer_text[:50]}...'")
@@ -63,10 +86,15 @@ class ScoreEngine:
                 ps_markers = [
                     "trade-off", "alternative", "depends", "strategy", "handling", "solution", "scale",
                     "компромисс", "альтернатива", "зависит", "стратегия", "обработка", "решение", "масштабирование",
-                    "kelishuv", "muqobil", "bog'liq", "strategiya", "ishlov", "yechim", "miqyoslash"
+                    "kelishuv", "muqobil", "bog'liq", "strategiya", "ishlov", "yechim", "miqyoslash",
+                    "плюсы", "минусы", "вариант", "лучше", "хуже", "afzallik", "kamchilik"
                 ]
                 ps_matches = sum(10 for m in ps_markers if m in answer.answer_text.lower())
-                ps_score = min(100.0, knowledge_base + ps_matches)
+                # For case studies, length is even more important
+                ps_len_score = 75 if word_count > 30 else (50 if word_count > 15 else 0)
+                
+                ps_score = min(100.0, max(knowledge_base, ps_len_score) + ps_matches)
+                
                 if ps_score == 0:
                     print(f"[SCORE_LOG] why_score_zero=True: PS score 0 for case question {answer.question_id}")
                 problem_solving_scores.append(ps_score)
@@ -86,7 +114,11 @@ class ScoreEngine:
         Calculates how well the interview covered the candidate's skills.
         Range: 0-100
         """
-        if not cv_skills or not questions:
+        # Fallback: if no CV skills found (parsing error), assume match to avoid penalizing candidate
+        if not cv_skills: 
+            return 100.0
+            
+        if not questions:
             return 50.0
             
         interview_skills = set()

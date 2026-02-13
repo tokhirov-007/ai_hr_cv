@@ -8,7 +8,7 @@ const translations = {
     en: {
         loading: "Analyzing your CV...",
         final_title: "Thank You!",
-        final_msg: "We have received your interview. We will contact you soon.",
+        final_msg: "Your interview is complete. You will receive an email notification soon. Please check your Inbox and Spam folder within 10-15 minutes.",
         btn_start: "Start Interview",
         lbl_upload: "Select CV (PDF/DOCX)",
         answer_ph: "Type your answer here...",
@@ -21,7 +21,7 @@ const translations = {
     ru: {
         loading: "Анализируем ваше CV...",
         final_title: "Спасибо!",
-        final_msg: "Мы получили ваши ответы. Мы свяжемся с вами в ближайшее время.",
+        final_msg: "Интервью успешно завершено. В ближайшее время вам придет уведомление на почту. Пожалуйста, проверьте папку «Входящие» и «Спам» в течение 10-15 минут.",
         btn_start: "Начать интервью",
         lbl_upload: "Выберите CV (PDF/DOCX)",
         answer_ph: "Введите ваш ответ здесь...",
@@ -34,7 +34,7 @@ const translations = {
     uz: {
         loading: "CV tahlil qilinmoqda...",
         final_title: "Rahmat!",
-        final_msg: "Sizning javoblaringiz qabul qilindi. Tez orada siz bilan bog'lanamiz.",
+        final_msg: "Sizning intervyungiz muvaffaqiyatli yakunlandi. Tez orada elektron pochtangizga xabar keladi. Iltimos, 10-15 daqiqa ichida «Inboks» va «Spam» papkalarini tekshiring.",
         btn_start: "Intervyuni boshlash",
         lbl_upload: "CV-ni tanlang (PDF/DOCX)",
         answer_ph: "Javobingizni bu yerga yozing...",

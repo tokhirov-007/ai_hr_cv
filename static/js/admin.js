@@ -60,10 +60,13 @@ function updateAdminUI() {
     loadCandidates();
 }
 
+let allCandidates = [];
+
 async function loadCandidates() {
     try {
         const response = await fetch('/admin/sessions');
         const data = await response.json();
+        allCandidates = data; // Store for modal access
         renderCandidates(data);
     } catch (error) {
         console.error("Failed to load candidates:", error);
@@ -89,25 +92,56 @@ function renderCandidates(candidates) {
             statusText = t.status_rejected;
         }
 
-        const cvLink = c.cv_path ? `<a href="/uploads/${c.cv_path.replace(/\\/g, '/').split('/').pop()}" target="_blank" class="cv-link">${t.view_cv}</a>` : 'No CV';
+        const cvLink = c.cv_path ? `<a href="/uploads/${c.cv_path.replace(/\\/g, '/').split('/').pop()}" target="_blank" class="admin-btn btn-cv">📄 CV</a>` : 'No CV';
 
         tr.innerHTML = `
             <td><strong>${c.candidate_name}</strong></td>
             <td>${c.candidate_phone}</td>
             <td>${c.candidate_email}</td>
             <td>${(c.candidate_lang || 'en').toUpperCase()}</td>
+            <td>${new Date(c.start_time).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</td>
             <td><span class="status-badge ${statusClass}">${statusText}</span></td>
             <td class="score-cell">${c.score !== null ? c.score : '-'}</td>
             <td>
-                <div style="display:flex; gap:8px;">
+                <div style="display:flex; gap:8px; align-items: center;">
                     ${cvLink}
-                    <button onclick="updateStatus('${c.session_id}', 'INVITED')" class="lang-switcher button" style="padding:2px 8px; font-size:0.7rem;">${t.status_invited}</button>
-                    <button onclick="updateStatus('${c.session_id}', 'REJECTED')" class="lang-switcher button" style="padding:2px 8px; font-size:0.7rem; color:#F87171;">${t.status_rejected}</button>
+                    <button onclick="showQA('${c.session_id}')" class="admin-btn btn-qa" title="View Q&A">💬 Q&A</button>
+                    <button onclick="updateStatus('${c.session_id}', 'INVITED')" class="admin-btn btn-invite" title="Invite">✅</button>
+                    <button onclick="updateStatus('${c.session_id}', 'REJECTED')" class="admin-btn btn-reject" title="Reject">❌</button>
                 </div>
             </td>
         `;
         body.appendChild(tr);
     });
+}
+
+function showQA(sessionId) {
+    const candidate = allCandidates.find(c => c.session_id === sessionId);
+    if (!candidate) return;
+
+    const content = document.getElementById('qa-content');
+    content.innerHTML = '';
+
+    if (!candidate.questions || candidate.questions.length === 0) {
+        content.innerHTML = '<p style="text-align:center; padding: 20px; opacity: 0.6;">No questions found for this session.</p>';
+    } else {
+        candidate.questions.forEach((q, idx) => {
+            const answer = (candidate.answers && candidate.answers[idx]) ? candidate.answers[idx].answer_text : '<i>No answer provided</i>';
+            const qaItem = document.createElement('div');
+            qaItem.className = 'qa-item';
+            qaItem.innerHTML = `
+                <div class="qa-q"><strong>Q${idx + 1}:</strong> ${q.question}</div>
+                <div class="qa-a"><strong>A:</strong> ${answer}</div>
+            `;
+            content.appendChild(qaItem);
+        });
+    }
+
+    document.getElementById('qa-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('qa-modal').classList.add('hidden');
 }
 
 async function updateStatus(sessionId, status) {

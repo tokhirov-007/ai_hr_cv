@@ -15,8 +15,6 @@
         <nav>
             <ul>
                 <li class="active">Candidates</li>
-                <li>Reports</li>
-                <li>Settings</li>
             </ul>
         </nav>
     </div>
@@ -41,6 +39,7 @@
                         <th id="th-phone">Phone</th>
                         <th id="th-email">Email</th>
                         <th id="th-lang">Lang</th>
+                        <th id="th-date">Date</th>
                         <th id="th-status">Status</th>
                         <th id="th-score">Score</th>
                         <th id="th-actions">Actions</th>
@@ -52,6 +51,17 @@
             </table>
         </section>
     </main>
+    <div id="qa-modal" class="modal-overlay hidden">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h3>История ответов / Interview Q&A</h3>
+                <button onclick="closeModal()" class="close-btn">&times;</button>
+            </div>
+            <div id="qa-content" class="modal-body">
+                <!-- Q&A content here -->
+            </div>
+        </div>
+    </div>
     <script src="/static/js/admin.js?v=6.1"></script>
 </body>
 
