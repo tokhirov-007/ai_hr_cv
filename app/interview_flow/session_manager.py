@@ -376,6 +376,8 @@ class SessionManager:
                     status_public=new_public,
                     lang=lang
                 )
+            else:
+                print(f"DEBUG: Notification skipped. new_public({new_public}) == old_public({old_public})")
         except Exception as e:
             db.rollback()
             print(f"Error in update_status: {e}")

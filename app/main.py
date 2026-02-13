@@ -29,6 +29,7 @@ from app.scoring.score_engine import ScoreEngine
 from app.scoring.recommendation import RecommendationEngine
 from app.scoring.confidence_level import ConfidenceAnalyzer
 from app.scoring.schemas import FinalRecommendation
+from app.config import settings
 from typing import List, Optional
 import uvicorn
 import shutil
@@ -613,5 +614,10 @@ async def list_sessions():
         db.close()
 
 if __name__ == "__main__":
+    print(f"SMTP Config Loaded: User={settings.SMTP_USER}, Server={settings.SMTP_SERVER}:{settings.SMTP_PORT}")
+    if not settings.SMTP_USER:
+        print("WARNING: SMTP_USER is empty! Check your .env file.")
+    
     print("Starting AI HR System API...")
+    import uvicorn
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
