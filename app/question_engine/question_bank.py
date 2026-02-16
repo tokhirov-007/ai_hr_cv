@@ -19,32 +19,44 @@ class QuestionBank:
             Question(
                 id=1, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое list comprehension в Python и когда его использовать?",
-                expected_topics=["list comprehension", "syntax", "performance"]
+                expected_topics=["list comprehension", "syntax", "performance"],
+                lang="ru"
+            ),
+            Question(
+                id=1001, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
+                question="What is list comprehension in Python?",
+                expected_topics=["list comprehension", "syntax", "performance"],
+                lang="en"
             ),
             Question(
                 id=2, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE,
                 question="Напишите функцию, которая находит все уникальные элементы в списке.",
-                expected_topics=["set", "list", "uniqueness"]
+                expected_topics=["set", "list", "uniqueness"],
+                lang="ru"
             ),
             Question(
                 id=3, skill="python", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
                 question="Объясните разницу между @staticmethod и @classmethod.",
-                expected_topics=["decorators", "methods", "OOP"]
+                expected_topics=["decorators", "methods", "OOP"],
+                lang="ru"
             ),
             Question(
                 id=4, skill="python", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как бы вы оптимизировали код, который обрабатывает большой CSV файл?",
-                expected_topics=["generators", "memory", "performance"]
+                expected_topics=["generators", "memory", "performance"],
+                lang="ru"
             ),
             Question(
                 id=5, skill="python", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
                 question="Объясните работу GIL (Global Interpreter Lock) и его влияние на многопоточность.",
-                expected_topics=["GIL", "threading", "concurrency"]
+                expected_topics=["GIL", "threading", "concurrency"],
+                lang="ru"
             ),
             Question(
                 id=6, skill="python", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
                 question="Спроектируйте систему кэширования с TTL для API запросов.",
-                expected_topics=["caching", "TTL", "design patterns"]
+                expected_topics=["caching", "TTL", "design patterns"],
+                lang="ru"
             ),
         ])
         
@@ -53,32 +65,38 @@ class QuestionBank:
             Question(
                 id=7, skill="javascript", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое замыкание (closure) в JavaScript?",
-                expected_topics=["closure", "scope", "functions"]
+                expected_topics=["closure", "scope", "functions"],
+                lang="ru"
             ),
             Question(
                 id=8, skill="javascript", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE,
                 question="Напишите функцию debounce для оптимизации поиска.",
-                expected_topics=["debounce", "setTimeout", "optimization"]
+                expected_topics=["debounce", "setTimeout", "optimization"],
+                lang="ru"
             ),
             Question(
                 id=9, skill="javascript", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
                 question="Объясните разницу между Promise и async/await.",
-                expected_topics=["promises", "async", "asynchronous"]
+                expected_topics=["promises", "async", "asynchronous"],
+                lang="ru"
             ),
             Question(
                 id=10, skill="javascript", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как бы вы оптимизировали работу асинхронных запросов в SPA?",
-                expected_topics=["async", "promises", "performance"]
+                expected_topics=["async", "promises", "performance"],
+                lang="ru"
             ),
             Question(
                 id=11, skill="javascript", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
                 question="Объясните Event Loop и как работает очередь микрозадач.",
-                expected_topics=["event loop", "microtasks", "macrotasks"]
+                expected_topics=["event loop", "microtasks", "macrotasks"],
+                lang="ru"
             ),
             Question(
                 id=12, skill="javascript", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
                 question="Спроектируйте систему управления состоянием для большого приложения.",
-                expected_topics=["state management", "architecture", "patterns"]
+                expected_topics=["state management", "architecture", "patterns"],
+                lang="ru"
             ),
         ])
         
@@ -87,32 +105,38 @@ class QuestionBank:
             Question(
                 id=13, skill="react", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое Virtual DOM и зачем он нужен?",
-                expected_topics=["virtual DOM", "reconciliation", "performance"]
+                expected_topics=["virtual DOM", "reconciliation", "performance"],
+                lang="ru"
             ),
             Question(
                 id=14, skill="react", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE,
                 question="Создайте простой компонент счётчика с useState.",
-                expected_topics=["useState", "hooks", "state"]
+                expected_topics=["useState", "hooks", "state"],
+                lang="ru"
             ),
             Question(
                 id=15, skill="react", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
                 question="Объясните useEffect и его зависимости.",
-                expected_topics=["useEffect", "lifecycle", "dependencies"]
+                expected_topics=["useEffect", "lifecycle", "dependencies"],
+                lang="ru"
             ),
             Question(
                 id=16, skill="react", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как избежать лишних ререндеров в React?",
-                expected_topics=["memo", "useMemo", "useCallback", "optimization"]
+                expected_topics=["memo", "useMemo", "useCallback", "optimization"],
+                lang="ru"
             ),
             Question(
                 id=17, skill="react", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
                 question="Объясните работу React Fiber и приоритизацию рендеринга.",
-                expected_topics=["fiber", "concurrent mode", "scheduling"]
+                expected_topics=["fiber", "concurrent mode", "scheduling"],
+                lang="ru"
             ),
             Question(
                 id=18, skill="react", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
                 question="Спроектируйте архитектуру для микрофронтенд приложения на React.",
-                expected_topics=["microfrontends", "architecture", "module federation"]
+                expected_topics=["microfrontends", "architecture", "module federation"],
+                lang="ru"
             ),
         ])
         
@@ -121,17 +145,20 @@ class QuestionBank:
             Question(
                 id=19, skill="node.js", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое middleware в Express.js?",
-                expected_topics=["middleware", "express", "request pipeline"]
+                expected_topics=["middleware", "express", "request pipeline"],
+                lang="ru"
             ),
             Question(
                 id=20, skill="node.js", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как организовать обработку ошибок в Express приложении?",
-                expected_topics=["error handling", "middleware", "try-catch"]
+                expected_topics=["error handling", "middleware", "try-catch"],
+                lang="ru"
             ),
             Question(
                 id=21, skill="node.js", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
                 question="Спроектируйте систему обработки очередей с использованием Node.js.",
-                expected_topics=["queues", "workers", "scalability"]
+                expected_topics=["queues", "workers", "scalability"],
+                lang="ru"
             ),
         ])
         
@@ -140,17 +167,20 @@ class QuestionBank:
             Question(
                 id=22, skill="django", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое ORM в Django и как он работает?",
-                expected_topics=["ORM", "models", "database"]
+                expected_topics=["ORM", "models", "database"],
+                lang="ru"
             ),
             Question(
                 id=23, skill="django", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как оптимизировать запросы к базе данных в Django?",
-                expected_topics=["select_related", "prefetch_related", "N+1 problem"]
+                expected_topics=["select_related", "prefetch_related", "N+1 problem"],
+                lang="ru"
             ),
             Question(
                 id=24, skill="django", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
                 question="Спроектируйте систему прав доступа для многопользовательского приложения.",
-                expected_topics=["permissions", "authentication", "authorization"]
+                expected_topics=["permissions", "authentication", "authorization"],
+                lang="ru"
             ),
         ])
         
@@ -159,17 +189,20 @@ class QuestionBank:
             Question(
                 id=25, skill="postgresql", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое индексы и зачем они нужны?",
-                expected_topics=["indexes", "performance", "queries"]
+                expected_topics=["indexes", "performance", "queries"],
+                lang="ru"
             ),
             Question(
                 id=26, skill="postgresql", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как бы вы оптимизировали медленный SQL запрос?",
-                expected_topics=["EXPLAIN", "indexes", "query optimization"]
+                expected_topics=["EXPLAIN", "indexes", "query optimization"],
+                lang="ru"
             ),
             Question(
                 id=27, skill="sql", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Объясните разницу между INNER JOIN и LEFT JOIN.",
-                expected_topics=["joins", "SQL", "relationships"]
+                expected_topics=["joins", "SQL", "relationships"],
+                lang="ru"
             ),
         ])
         
@@ -178,17 +211,114 @@ class QuestionBank:
             Question(
                 id=28, skill="docker", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
                 question="Что такое Docker контейнер и чем он отличается от виртуальной машины?",
-                expected_topics=["containers", "virtualization", "isolation"]
+                expected_topics=["containers", "virtualization", "isolation"],
+                lang="ru"
             ),
             Question(
                 id=29, skill="docker", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
                 question="Как организовать multi-stage build для оптимизации Docker образа?",
-                expected_topics=["multi-stage", "optimization", "Dockerfile"]
+                expected_topics=["multi-stage", "optimization", "Dockerfile"],
+                lang="ru"
             ),
             Question(
                 id=30, skill="docker", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
                 question="Спроектируйте Docker Compose конфигурацию для микросервисной архитектуры.",
-                expected_topics=["docker-compose", "microservices", "networking"]
+                expected_topics=["docker-compose", "microservices", "networking"],
+                lang="ru"
+            ),
+        ])
+
+        # Soft Skills & Culture Fit Questions (Added per user request)
+        questions.extend([
+            Question(
+                id=101, skill="soft_skills", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
+                question="Как вы относитесь к работе в коллективе? Что для вас важнее: личный результат или успех команды?",
+                expected_topics=["teamwork", "collaboration", "communication"],
+                lang="ru"
+            ),
+            Question(
+                id=102, skill="soft_skills", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
+                question="Как бы вы описали свой тип личности: интроверт, экстраверт или амбиверт? Как это влияет на вашу работу?",
+                expected_topics=["personality", "self-awareness", "work style"],
+                lang="ru"
+            ),
+            Question(
+                id=103, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
+                question="Представьте, что у вас возник конфликт с коллегой по поводу технического решения. Ваши действия?",
+                expected_topics=["conflict resolution", "professionalism", "compromise"],
+                lang="ru"
+            ),
+            Question(
+                id=104, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
+                question="Что вас больше всего мотивирует в работе, кроме финансовой составляющей?",
+                expected_topics=["motivation", "growth", "values"],
+                lang="ru"
+            ),
+            Question(
+                id=105, skill="soft_skills", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
+                question="Вам нужно сообщить руководителю о том, что вы не успеваете сдать проект в срок. Как вы это сделаете?",
+                expected_topics=["transparency", "responsibility", "planning"],
+                lang="ru"
+            ),
+            Question(
+                id=106, skill="soft_skills", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
+                question="Опишите идеальную для вас рабочую атмосферу и культуру компании.",
+                expected_topics=["culture fit", "environment", "values"],
+                lang="ru"
+            ),
+            Question(
+                id=107, skill="soft_skills", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
+                question="Что для вас важно при выборе компании: продукт, команда, уровень зарплаты, возможности роста? Расставьте по приоритету.",
+                expected_topics=["company choice", "values", "growth"],
+                lang="ru"
+            ),
+            Question(
+                id=108, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
+                question="Представьте, что ценности компании частично расходятся с вашими личными. Как вы будете действовать в такой ситуации?",
+                expected_topics=["company values", "conflict of values", "ethics"],
+                lang="ru"
+            ),
+            Question(
+                id=109, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
+                question="Какой стиль управления (микроменеджмент, доверие, гибкость) для вас наиболее комфортен и почему?",
+                expected_topics=["management style", "expectations", "communication"],
+                lang="ru"
+            ),
+            Question(
+                id=110, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
+                question="Компания переживает период активных изменений (рост, смена приоритетов). Как вы обычно адаптируетесь к таким ситуациям?",
+                expected_topics=["change management", "adaptability", "company growth"],
+                lang="ru"
+            ),
+            Question(
+                id=111, skill="soft_skills", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
+                question="Опишите ситуацию, когда вы были не согласны с решением руководства. Как вы выстроили диалог и к чему это привело?",
+                expected_topics=["communication with management", "disagreement", "conflict resolution"],
+                lang="ru"
+            ),
+            Question(
+                id=112, skill="soft_skills", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
+                question="Как вы понимаете 'здоровую корпоративную культуру'? Какие сигналы для вас говорят о том, что в компании с этим есть проблемы?",
+                expected_topics=["corporate culture", "company health", "red flags"],
+                lang="ru"
+            ),
+            Question(
+                id=113, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
+                question="Как вы относитесь к удалённому формату работы по сравнению с офисным? В чём плюсы и минусы для вас лично?",
+                expected_topics=["remote work", "office", "productivity"],
+                lang="ru"
+            ),
+            Question(
+                id=114, skill="soft_skills", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
+                question="Что помогает вам сохранять мотивацию и вовлечённость в долгосрочных проектах компании?",
+                expected_topics=["motivation", "long-term projects", "engagement"],
+                lang="ru"
+            ),
+            Question(
+                id=115, skill="soft_skills", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
+                question="Представьте, что вам не до конца понятна стратегия компании. Какие шаги вы предпримете, чтобы лучше её понять?",
+                expected_topics=["strategy", "questions", "initiative"],
+                lang="ru"
             ),
         ])
         
@@ -230,150 +360,3 @@ class QuestionBank:
         """Get questions filtered by skill, difficulty and language"""
         skill_questions = self.get_questions_by_skill(skill)
         return [q for q in skill_questions if q.difficulty == difficulty and q.lang == lang]
-
-    def _initialize_questions(self) -> List[Question]:
-        """Initialize the question bank with pre-defined questions"""
-        questions = []
-        
-        # Python Questions
-        questions.extend([
-            Question(
-                id=1, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
-                question="Что такое list comprehension в Python и когда его использовать?", lang="ru",
-                expected_topics=["list comprehension", "syntax", "performance"]
-            ),
-            Question(
-                id=1001, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
-                question="What is list comprehension in Python?", lang="en",
-                expected_topics=["list comprehension", "syntax", "performance"]
-            ),
-            Question(
-                id=2, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE,
-                question="Напишите функцию, которая находит все уникальные элементы в списке.", lang="ru",
-                expected_topics=["set", "list", "uniqueness"]
-            ),
-            Question(
-                id=1002, skill="python", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE,
-                question="Write a function to find unique elements in a list.", lang="en",
-                expected_topics=["set", "list", "uniqueness"]
-            ),
-            Question(
-                id=3, skill="python", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
-                question="Объясните разницу между @staticmethod и @classmethod.", lang="ru",
-                expected_topics=["decorators", "methods", "OOP"]
-            ),
-            Question(
-                id=1003, skill="python", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
-                question="Explain difference between staticmethod and classmethod.", lang="en",
-                expected_topics=["decorators", "methods", "OOP"]
-            ),
-            Question(
-                id=4, skill="python", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
-                question="Как бы вы оптимизировали код, который обрабатывает большой CSV файл?", lang="ru",
-                expected_topics=["generators", "memory", "performance"]
-            ),
-            Question(
-                id=5, skill="python", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
-                question="Объясните работу GIL (Global Interpreter Lock) и его влияние на многопоточность.", lang="ru",
-                expected_topics=["GIL", "threading", "concurrency"]
-            ),
-            Question(
-                id=1005, skill="python", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
-                question="Explain GIL and its impact.", lang="en",
-                expected_topics=["GIL", "threading", "concurrency"]
-            ),
-            Question(
-                id=6, skill="python", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
-                question="Спроектируйте систему кэширования с TTL для API запросов.", lang="ru",
-                expected_topics=["caching", "TTL", "design patterns"]
-            ),
-        ])
-        
-        # JavaScript Questions
-        questions.extend([
-            Question(
-                id=7, skill="javascript", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
-                question="Что такое замыкание (closure) в JavaScript?", lang="ru",
-                expected_topics=["closure", "scope", "functions"]
-            ),
-            Question(
-                id=1007, skill="javascript", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
-                question="What is a closure in JS?", lang="en",
-                expected_topics=["closure", "scope", "functions"]
-            ),
-            Question(
-                id=207, skill="javascript", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY,
-                question="JavaScript-da closure (zamykaniye) nima?", lang="uz",
-                expected_topics=["closure", "scope", "functions"]
-            ),
-            Question(
-                id=8, skill="javascript", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE,
-                question="Напишите функцию debounce для оптимизации поиска.", lang="ru",
-                expected_topics=["debounce", "setTimeout", "optimization"]
-            ),
-            Question(
-                id=9, skill="javascript", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY,
-                question="Объясните разницу между Promise и async/await.", lang="ru",
-                expected_topics=["promises", "async", "asynchronous"]
-            ),
-            Question(
-                id=10, skill="javascript", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE,
-                question="Как бы вы оптимизировали работу асинхронных запросов в SPA?", lang="ru",
-                expected_topics=["async", "promises", "performance"]
-            ),
-            Question(
-                id=11, skill="javascript", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY,
-                question="Объясните Event Loop и как работает очередь микрозадач.", lang="ru",
-                expected_topics=["event loop", "microtasks", "macrotasks"]
-            ),
-            Question(
-                id=12, skill="javascript", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE,
-                question="Спроектируйте систему управления состоянием для большого приложения.", lang="ru",
-                expected_topics=["state management", "architecture", "patterns"]
-            ),
-        ])
-
-        # Add other categories with lang="ru"
-        # React, Node.js, Django, PostgreSQL, SQL, Docker
-        # ... (Restoring them as they were)
-        
-        # React
-        questions.extend([
-            Question(id=13, skill="react", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="Что такое Virtual DOM?", lang="ru", expected_topics=["virtual DOM"]),
-            Question(id=1013, skill="react", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="What is Virtual DOM?", lang="en", expected_topics=["virtual DOM"]),
-            Question(id=14, skill="react", difficulty=DifficultyLevel.EASY, type=QuestionType.CASE, question="Создайте счетчик с useState.", lang="ru", expected_topics=["useState"]),
-            Question(id=15, skill="react", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.THEORY, question="Объясните useEffect.", lang="ru", expected_topics=["useEffect"]),
-            Question(id=16, skill="react", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE, question="Как избежать ререндеров?", lang="ru", expected_topics=["optimization"]),
-            Question(id=17, skill="react", difficulty=DifficultyLevel.HARD, type=QuestionType.THEORY, question="React Fiber.", lang="ru", expected_topics=["fiber"]),
-            Question(id=18, skill="react", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE, question="Микрофронтенды.", lang="ru", expected_topics=["microfrontends"]),
-        ])
-
-        # Node.js
-        questions.extend([
-            Question(id=19, skill="node.js", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="Что такое middleware в Express.js?", lang="ru", expected_topics=["middleware"]),
-            Question(id=20, skill="node.js", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE, question="Обработка ошибок в Express.", lang="ru", expected_topics=["error handling"]),
-            Question(id=21, skill="node.js", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE, question="Очереди в Node.js.", lang="ru", expected_topics=["queues"]),
-        ])
-        
-        # Django
-        questions.extend([
-            Question(id=22, skill="django", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="Что такое ORM в Django?", lang="ru", expected_topics=["ORM"]),
-            Question(id=23, skill="django", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE, question="Оптимизация запросов в Django.", lang="ru", expected_topics=["select_related"]),
-            Question(id=24, skill="django", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE, question="Система прав в Django.", lang="ru", expected_topics=["permissions"]),
-        ])
-
-        # PostgreSQL / SQL
-        questions.extend([
-            Question(id=25, skill="postgresql", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="Что такое индексы?", lang="ru", expected_topics=["indexes"]),
-            Question(id=26, skill="postgresql", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE, question="Оптимизация медленного SQL.", lang="ru", expected_topics=["optimization"]),
-            Question(id=27, skill="sql", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="INNER vs LEFT JOIN.", lang="ru", expected_topics=["joins"]),
-        ])
-
-        # Docker
-        questions.extend([
-            Question(id=28, skill="docker", difficulty=DifficultyLevel.EASY, type=QuestionType.THEORY, question="Docker vs VM?", lang="ru", expected_topics=["containers"]),
-            Question(id=29, skill="docker", difficulty=DifficultyLevel.MEDIUM, type=QuestionType.CASE, question="Multi-stage build.", lang="ru", expected_topics=["multi-stage"]),
-            Question(id=30, skill="docker", difficulty=DifficultyLevel.HARD, type=QuestionType.CASE, question="Docker Compose для микросервисов.", lang="ru", expected_topics=["docker-compose"]),
-        ])
-        
-        return questions

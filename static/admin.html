@@ -6,7 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI HR - Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css?v=6.1">
+    <link rel="stylesheet" href="/static/css/style.css?v=6.2">
+    <style>
+        .ai-badge {
+            background: #ff4757;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+        }
+
+        .fast-type-badge {
+            background: #ffa502;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+        }
+    </style>
 </head>
 
 <body class="admin-body">
@@ -23,7 +48,7 @@
             <div>
                 <h1 id="admin-title">Кандидаты</h1>
                 <p id="admin-subtitle">Управление потоком найма <span
-                        style="font-size: 0.7rem; opacity: 0.6;">v6.1</span></p>
+                        style="font-size: 0.7rem; opacity: 0.6;">v6.2</span></p>
             </div>
             <div class="lang-switcher">
                 <button onclick="switchAdminLang('ru')" id="btn-admin-ru" class="active">RU</button>
@@ -62,7 +87,7 @@
             </div>
         </div>
     </div>
-    <script src="/static/js/admin.js?v=6.1"></script>
+    <script src="/static/js/admin.js?v=6.2"></script>
 </body>
 
 </html>

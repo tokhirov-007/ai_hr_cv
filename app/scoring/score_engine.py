@@ -59,11 +59,19 @@ class ScoreEngine:
             ]
             
             # Length Heuristic (Smart Grading)
-            # If answer is detailed (>20 words) and has at least some relevance, give good score
+            # If answer is detailed (>20 words) AND has at least some relevance, give good score
             word_count = len(answer.answer_text.split())
             length_score = 0
+            
+            # Count keyword hits early for heuristic usage
+            keyword_hits = sum(1 for word in technical_keywords if word in answer.answer_text.lower())
+            
             if word_count > 20: 
-                length_score = 70 # Good base for detailed answer
+                # Require at least 1 keyword or topic match to get full length bonus
+                if matches > 0 or keyword_hits > 0:
+                    length_score = 70 # Good base for detailed RELEVANT answer
+                else:
+                    length_score = 40 # Long but irrelevant (gibberish/water)
             elif word_count > 10:
                 length_score = 50
             

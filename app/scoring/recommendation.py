@@ -41,27 +41,34 @@ class RecommendationEngine:
                          breakdown: ScoreBreakdown, 
                          flags: List[str]) -> str:
         """
-        Generate a qualitative HR comment.
+        Generate a qualitative HR comment (Bilingual RU ||| UZ).
         """
-        comments = []
+        comments_ru = []
+        comments_uz = []
         
         # Technical part
         if breakdown.knowledge_score > 80:
-            comments.append("Demonstrates mastery of core concepts.")
+            comments_ru.append("Демонстрирует глубокое понимание концепций.")
+            comments_uz.append("Asosiy tushunchalarni chuqur bilishini namoyish etadi.")
         elif breakdown.knowledge_score > 60:
-            comments.append("Shows decent understanding of the stack.")
+            comments_ru.append("Показывает хорошее понимание стека.")
+            comments_uz.append("Texnologiyalar stekini yaxshi tushunadi.")
             
         # Integrity part
         if breakdown.honesty_score < 60:
-            comments.append("Note: Answers show patterns consistent with AI assistance.")
+            comments_ru.append("Заметка: Ответы похожи на AI.")
+            comments_uz.append("Eslatma: Javoblar AI ga o'xshaydi.")
         elif breakdown.honesty_score > 90:
-            comments.append("Answers appear highly authentic and spontaneous.")
+            comments_ru.append("Ответы выглядят естественными.")
+            comments_uz.append("Javoblar tabiiy va samimiy ko'rinadi.")
             
         # Behavioral part
         if breakdown.time_behavior_score < 50:
-            comments.append("Responses given suspiciously fast for the complexity.")
+            comments_ru.append("Подозрительно быстрые ответы.")
+            comments_uz.append("Javoblar shubhali darajada tez berilgan.")
             
-        if not comments:
-            comments.append("Standard performance across all metrics.")
+        if not comments_ru:
+            comments_ru.append("Стандартный результат.")
+            comments_uz.append("Standart natija.")
             
-        return " ".join(comments)
+        return " ".join(comments_ru) + "|||" + " ".join(comments_uz)

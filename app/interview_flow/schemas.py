@@ -16,6 +16,10 @@ class Answer(BaseModel):
     time_spent: int  # seconds
     submitted_at: datetime
     is_timeout: bool = False
+    
+    # AI Detection Results
+    ai_score: Optional[float] = 0.0
+    ai_explanation: Optional[str] = ""
 
 class QuestionProgress(BaseModel):
     """Current question state in the interview"""

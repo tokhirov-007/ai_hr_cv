@@ -98,7 +98,7 @@ class QuestionGenerator:
         self,
         skill: str,
         difficulty: DifficultyLevel,
-        count: int = 2,
+        count: int = 1,  # Reduced from 2 to 1 for diversity
         lang: str = "ru"
     ) -> List[Question]:
         """

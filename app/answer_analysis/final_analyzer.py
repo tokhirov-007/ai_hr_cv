@@ -38,7 +38,14 @@ class FinalAnalyzer:
             q_data = question_map.get(answer.question_id, {"difficulty": "medium"})
             
             # 1. Run individual analyzers
-            ai_res = self.ai_detector.analyze(answer.answer_text)
+            # Use existing AI score if available (from SessionManager speed trap)
+            if hasattr(answer, 'ai_score') and answer.ai_score is not None:
+                ai_score = answer.ai_score
+                ai_res = AnalysisResult(type=AnalysisType.AI_DETECTION, score=ai_score, flags=[])
+            else:
+                ai_res = self.ai_detector.analyze(answer.answer_text)
+                ai_score = ai_res.score
+
             struct_res = self.structure_analyzer.analyze(answer.answer_text)
             time_res = self.time_analyzer.analyze(
                 time_spent=answer.time_spent,
@@ -54,11 +61,9 @@ class FinalAnalyzer:
             
             # 2. Calculate Answer Honesty Score (Weighted)
             # Higher is better (more honest)
-            # AI Probability and Plagiarism lower the score
-            # Time and Structure influence it as indicators
             
             # Penalty factors (invert probability for honesty score)
-            ai_penalty = 1.0 - ai_res.score
+            ai_penalty = 1.0 - ai_score
             plag_penalty = 1.0 - plag_res.score
             
             # Weighted average for honesty
@@ -70,13 +75,19 @@ class FinalAnalyzer:
                 (struct_res.score * 0.1)
             )
             
+            # KILL SWITCH: If clearly cheating, cap honesty score hard
+            if ai_score > 0.8 or plag_res.score > 0.8:
+                honesty_score = min(honesty_score, 0.3)
+                if ai_score > 0.9: # Super obvious AI
+                     honesty_score = 0.1
+            
             # 3. Create individual report
             all_results = [ai_res, struct_res, time_res, plag_res]
             all_flags = []
             for r in all_results:
                 all_flags.extend(r.flags)
                 
-            is_suspicious = honesty_score < 0.6 or ai_res.score > 0.7 or plag_res.score > 0.7
+            is_suspicious = honesty_score < 0.6 or ai_score > 0.7 or plag_res.score > 0.7
             
             # Generate summary text
             if is_suspicious:

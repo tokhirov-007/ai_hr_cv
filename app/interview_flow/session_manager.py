@@ -16,6 +16,8 @@ from app.notifications.dispatcher import NotificationDispatcher
 from app.notifications.logger import NotificationLogger
 from app.database import SessionLocal
 from app.models import Candidate, SessionModel
+from app.answer_analysis.ai_detector import AIDetector
+from app.interview_flow.schemas import SessionStatus as SessionStatusEnum
 
 class SessionManager:
     """
@@ -31,6 +33,7 @@ class SessionManager:
         self.answer_handlers: Dict[str, AnswerHandler] = {}
         self.notification_dispatcher = NotificationDispatcher()
         self.audit_logger = NotificationLogger()
+        self.ai_detector = AIDetector()
     
     def create_session(
         self,
@@ -110,6 +113,7 @@ class SessionManager:
                 candidate_name=candidate_name,
                 candidate_phone=candidate_phone,
                 candidate_email=candidate_email,
+                candidate_lang=candidate_lang,  # Save language used in this session
                 
                 status=SessionStatus.ACTIVE.value,
                 status_internal="PENDING",
@@ -148,7 +152,8 @@ class SessionManager:
         """
         session = self.sessions.get(session_id)
         if not session:
-            raise ValueError(f"Session {session_id} not found")
+            # Only active sessions have a current question. For historical sessions, return None.
+            return None
         
         if session.status != SessionStatus.ACTIVE:
             return None
@@ -194,12 +199,17 @@ class SessionManager:
         is_timeout = timer.is_timeout()
         
         # Submit answer
-        answer_handler = self.answer_handlers[session_id]
-        answer = answer_handler.submit_answer(
+        # 3. Analyze for AI / Cheating
+        ai_result = self.ai_detector.analyze(text=answer_text, time_spent=time_spent)
+        
+        answer = Answer(
             question_id=session.current_question.question_id,
             answer_text=answer_text,
             time_spent=time_spent,
-            is_timeout=is_timeout
+            submitted_at=datetime.now(),
+            is_timeout=is_timeout,
+            ai_score=ai_result.score,
+            ai_explanation=", ".join(ai_result.flags)
         )
         
         # Add to session
@@ -247,7 +257,10 @@ class SessionManager:
         """
         session = self.sessions.get(session_id)
         if not session:
-            raise ValueError(f"Session {session_id} not found")
+            # Fallback: hydrate from DB for completed/historical sessions (admin + AI analysis)
+            session = self._load_session_from_db(session_id)
+            if not session:
+                raise ValueError(f"Session {session_id} not found")
         
         # Update current question time if active
         if session.status == SessionStatus.ACTIVE and session.current_question:
@@ -269,10 +282,12 @@ class SessionManager:
         """
         session = self.sessions.get(session_id)
         if not session:
-            raise ValueError(f"Session {session_id} not found")
-        
-        answer_handler = self.answer_handlers.get(session_id)
-        total_time = answer_handler.get_total_time_spent() if answer_handler else 0
+            session = self._load_session_from_db(session_id)
+            if not session:
+                raise ValueError(f"Session {session_id} not found")
+
+        # Compute total time from answers (AnswerHandler is not a reliable source for historical sessions)
+        total_time = sum(a.time_spent for a in (session.answers or []))
         
         return SessionSummary(
             session_id=session.session_id,
@@ -283,6 +298,69 @@ class SessionManager:
             status=session.status,
             answers=session.answers
         )
+
+    def _load_session_from_db(self, session_id: str) -> Optional[InterviewSession]:
+        """
+        Hydrate an InterviewSession from the database for admin/reporting endpoints.
+        This preserves the existing DB structure and avoids rewriting session flow.
+        """
+        db = SessionLocal()
+        try:
+            db_session = db.query(SessionModel).filter(SessionModel.id == session_id).first()
+            if not db_session:
+                return None
+
+            candidate = db_session.candidate
+            candidate_name = db_session.candidate_name or (candidate.name if candidate else "Unknown")
+            candidate_email = db_session.candidate_email or (candidate.email if candidate else "")
+            candidate_phone = db_session.candidate_phone or (candidate.phone if candidate else "")
+            candidate_lang = getattr(db_session, "candidate_lang", None) or (candidate.language if candidate else "en")
+
+            # Parse answers into Pydantic Answer objects (handles datetime parsing)
+            answers_raw = list(db_session.answers) if db_session.answers else []
+            parsed_answers = []
+            for a in answers_raw:
+                try:
+                    parsed_answers.append(Answer(**a))
+                except Exception:
+                    # Keep compatibility with older shapes if any
+                    parsed_answers.append(Answer(
+                        question_id=a.get("question_id", -1),
+                        answer_text=a.get("answer_text", ""),
+                        time_spent=int(a.get("time_spent", 0) or 0),
+                        submitted_at=a.get("submitted_at") or datetime.utcnow(),
+                        is_timeout=bool(a.get("is_timeout", False)),
+                        ai_score=float(a.get("ai_score", 0.0) or 0.0),
+                        ai_explanation=a.get("ai_explanation", "") or ""
+                    ))
+
+            status_val = db_session.status or SessionStatus.ACTIVE.value
+            status_enum = SessionStatusEnum.FINISHED if status_val == SessionStatus.FINISHED.value else SessionStatusEnum.ACTIVE
+
+            session = InterviewSession(
+                session_id=db_session.id,
+                candidate_id=str(db_session.candidate_id),
+                candidate_name=candidate_name,
+                candidate_email=candidate_email,
+                candidate_phone=candidate_phone,
+                candidate_lang=candidate_lang,
+                start_time=db_session.start_time or datetime.utcnow(),
+                end_time=db_session.end_time,
+                status=status_enum,
+                status_internal=db_session.status_internal or "PENDING",
+                status_public=db_session.status_public or "UNDER_REVIEW",
+                total_questions=int(db_session.total_questions or (len(db_session.questions) if db_session.questions else 0)),
+                current_question_index=int(db_session.current_question_index or 0),
+                questions=list(db_session.questions) if db_session.questions else [],
+                answers=parsed_answers,
+                current_question=None
+            )
+
+            # Cache it for subsequent admin/report requests
+            self.sessions[session_id] = session
+            return session
+        finally:
+            db.close()
     
     def _start_next_question(self, session_id: str):
         """Start the next question in the session"""

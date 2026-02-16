@@ -520,6 +520,7 @@ async def generate_recommendation(session_id: str):
                 db_session.hr_comment = recommendation.hr_comment
                 db_session.confidence = recommendation.confidence
                 db_session.ai_summary = recommendation.metadata.get("integrity_summary", "")
+                db_session.flags = recommendation.flags
                 
                 # Add CV URL to metadata for bot
                 if candidate and candidate.cv_path:
@@ -604,7 +605,7 @@ async def list_sessions():
                 "candidate_name": c_name,
                 "candidate_email": c_email,
                 "candidate_phone": c_phone,
-                "candidate_lang": candidate.language if candidate else "en",
+                "candidate_lang": getattr(session, 'candidate_lang', None) or (candidate.language if candidate else "en"),
                 "status_public": session.status_public,
                 "status_internal": session.status_internal,
                 "score": session.score,
@@ -612,6 +613,8 @@ async def list_sessions():
                 "cv_path": candidate.cv_path if candidate else "",
                 "questions": session.questions,
                 "answers": session.answers,
+                "hr_comment": session.hr_comment or "",
+                "flags": session.flags or [],
                 "start_time": session.start_time.isoformat() if session.start_time else ""
             })
         return results

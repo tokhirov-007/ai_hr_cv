@@ -27,6 +27,7 @@ class SessionModel(Base):
     candidate_name = Column(String, nullable=True)
     candidate_phone = Column(String, nullable=True)
     candidate_email = Column(String, nullable=True)
+    candidate_lang = Column(String, default="en")  # Language used in this session
     
     start_time = Column(DateTime, default=datetime.utcnow)
     end_time = Column(DateTime, nullable=True)
@@ -47,5 +48,6 @@ class SessionModel(Base):
     hr_comment = Column(Text, nullable=True)
     decision = Column(String, nullable=True)
     confidence = Column(String, nullable=True)
+    flags = Column(JSON, nullable=True)  # List of flags from AI analysis
     
     candidate = relationship("Candidate", back_populates="sessions")

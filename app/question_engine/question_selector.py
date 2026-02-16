@@ -28,12 +28,12 @@ class QuestionSelector:
             CandidateLevel.MIDDLE: {
                 "theory_ratio": 0.5,  # 50% theory
                 "case_ratio": 0.5,    # 50% case
-                "max_questions_per_skill": 2
+                "max_questions_per_skill": 1  # Reduced from 2 to 1 for diversity
             },
             CandidateLevel.SENIOR: {
                 "theory_ratio": 0.3,  # 30% theory
                 "case_ratio": 0.7,    # 70% case
-                "max_questions_per_skill": 2
+                "max_questions_per_skill": 1  # Reduced from 2 to 1 for diversity
             }
         }
         
@@ -60,14 +60,30 @@ class QuestionSelector:
         - Limit questions per skill
         """
         candidate_level = level_result.level
-        candidate_skills = [s.lower() for s in level_result.skills]
+        # Normalize skills; preserve order but drop empties/duplicates early
+        seen_skills = set()
+        candidate_skills = []
+        for s in (level_result.skills or []):
+            if not s:
+                continue
+            sl = s.lower().strip()
+            if not sl or sl in seen_skills:
+                continue
+            seen_skills.add(sl)
+            candidate_skills.append(sl)
         
         distribution = self.level_distribution[candidate_level]
         base_difficulty = self.level_difficulty_map[candidate_level]
         
         selected_questions: List[Question] = []
         
-        # Select questions for each skill
+        # Improve relevance/diversity: avoid overlong skill lists and remove ordering bias.
+        # Keep a capped set of skills, then shuffle so the same first skills don't always dominate.
+        if len(candidate_skills) > 10:
+            candidate_skills = candidate_skills[:10]
+        random.shuffle(candidate_skills)
+
+        # Select questions for each skill (technical)
         for skill in candidate_skills:
             skill_questions = self._select_questions_for_skill(
                 skill=skill,
@@ -80,10 +96,42 @@ class QuestionSelector:
         
         logger.info(f"[LANG={lang}] skills_detected={len(candidate_skills)} questions_generated={len(selected_questions)}")
         
-        # Limit total questions
+        # De-duplicate by (skill, text, difficulty, type) to prevent accidental repeats
+        deduped = []
+        seen = set()
+        for q in selected_questions:
+            key = (q.skill.lower().strip(), q.question.strip(), str(q.difficulty), str(q.type))
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append(q)
+        selected_questions = deduped
+
+        # Limit total technical questions (after dedupe)
         if len(selected_questions) > max_total_questions:
-            selected_questions = selected_questions[:max_total_questions]
+            selected_questions = random.sample(selected_questions, max_total_questions)
+            
+        # --- ADDED: Select Soft Skills / Culture Fit Questions ---
+        # Select 3 soft skills questions regardless of technical limit
+        soft_skills_questions = self._select_questions_for_skill(
+            skill="soft_skills",
+            difficulty=base_difficulty, # Matches candidate level
+            theory_ratio=0.5, # Mix of personality and situational questions
+            max_questions=3,
+            lang=lang
+        )
+        # Avoid duplicates between technical and soft-skills lists
+        for q in soft_skills_questions:
+            key = (q.skill.lower().strip(), q.question.strip(), str(q.difficulty), str(q.type))
+            if key in seen:
+                continue
+            seen.add(key)
+            selected_questions.append(q)
+        # ---------------------------------------------------------
         
+        # Shuffle final list so ordering is less predictable and questions feel more diverse
+        random.shuffle(selected_questions)
+
         logger.info(f"[LANG={lang}] interview_started=true final_questions={len(selected_questions)}")
         
         return QuestionSet(
@@ -160,5 +208,15 @@ class QuestionSelector:
                 case_questions,
                 min(num_case, len(case_questions))
             ))
+
+        # If we couldn't satisfy the desired count (e.g., no case questions exist),
+        # fill from remaining questions to avoid returning fewer questions than requested.
+        if len(selected) < max_questions and available_questions:
+            remaining = [q for q in available_questions if q not in selected]
+            if remaining:
+                selected.extend(random.sample(
+                    remaining,
+                    min(max_questions - len(selected), len(remaining))
+                ))
         
         return selected

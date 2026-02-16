@@ -277,6 +277,68 @@ class Translator:
             "en": "Docker Compose for microservices.",
             "uz": "Mikroservislar uchun Docker Compose."
         },
+
+        # Soft skills / psychology questions (QuestionBank stores RU; QuestionSelector translates via this dictionary)
+        "Как вы относитесь к работе в коллективе? Что для вас важнее: личный результат или успех команды?": {
+            "en": "How do you feel about working in a team? What is more important to you: personal results or the team’s success?",
+            "uz": "Jamoada ishlashga qanday qaraysiz? Siz uchun nimasi muhimroq: shaxsiy natija yoki jamoa muvaffaqiyati?"
+        },
+        "Как бы вы описали свой тип личности: интроверт, экстраверт или амбиверт? Как это влияет на вашу работу?": {
+            "en": "How would you describe your personality type: introvert, extrovert, or ambivert? How does it affect your work?",
+            "uz": "O'zingizning shaxsiyatingizni qanday ta'riflaysiz: introvert, extrovert yoki ambivert? Bu ish faoliyatingizga qanday ta'sir qiladi?"
+        },
+        "Представьте, что у вас возник конфликт с коллегой по поводу технического решения. Ваши действия?": {
+            "en": "Imagine you have a conflict with a colleague about a technical decision. What would you do?",
+            "uz": "Tasavvur qiling, texnik yechim bo'yicha hamkasbingiz bilan kelishmovchilik yuz berdi. Nima qilasiz?"
+        },
+        "Что вас больше всего мотивирует в работе, кроме финансовой составляющей?": {
+            "en": "What motivates you most at work besides financial compensation?",
+            "uz": "Moliyaviy tomondan tashqari, ishda sizni eng ko'p nima motivatsiya qiladi?"
+        },
+        "Вам нужно сообщить руководителю о том, что вы не успеваете сдать проект в срок. Как вы это сделаете?": {
+            "en": "You need to tell your manager that you won’t be able to deliver the project on time. How would you do it?",
+            "uz": "Rahbaringizga loyihani belgilangan muddatda topshira olmasligingizni aytishingiz kerak. Qanday aytasiz?"
+        },
+        "Опишите идеальную для вас рабочую атмосферу и культуру компании.": {
+            "en": "Describe the ideal work environment and company culture for you.",
+            "uz": "Siz uchun ideal ish muhiti va kompaniya madaniyatini tasvirlab bering."
+        },
+        "Что для вас важно при выборе компании: продукт, команда, уровень зарплаты, возможности роста? Расставьте по приоритету.": {
+            "en": "What matters to you when choosing a company: product, team, salary level, or growth opportunities? Rank them by priority.",
+            "uz": "Kompaniyani tanlashda siz uchun nimalar muhim: mahsulot, jamoa, maosh darajasi yoki o‘sish imkoniyatlari? Ularni ustuvorlik bo‘yicha joylashtiring."
+        },
+        "Представьте, что ценности компании частично расходятся с вашими личными. Как вы будете действовать в такой ситуации?": {
+            "en": "Imagine the company’s values partly conflict with your personal values. How would you act in this situation?",
+            "uz": "Tasavvur qiling, kompaniya qadriyatlari sizning shaxsiy qadriyatlaringiz bilan qisman mos kelmaydi. Bunday vaziyatda qanday harakat qilasiz?"
+        },
+        "Какой стиль управления (микроменеджмент, доверие, гибкость) для вас наиболее комфортен и почему?": {
+            "en": "Which management style (micromanagement, trust, flexibility) is the most comfortable for you and why?",
+            "uz": "Qaysi boshqaruv uslubi (mikroboshqaruv, ishonch, moslashuvchanlik) siz uchun eng qulay va nima uchun?"
+        },
+        "Компания переживает период активных изменений (рост, смена приоритетов). Как вы обычно адаптируетесь к таким ситуациям?": {
+            "en": "The company is going through a period of active change (growth, shifting priorities). How do you usually adapt to such situations?",
+            "uz": "Kompaniya faol o‘zgarishlar davrini boshdan kechirmoqda (o‘sish, ustuvorliklarning o‘zgarishi). Bunday vaziyatlarga odatda qanday moslashasiz?"
+        },
+        "Опишите ситуацию, когда вы были не согласны с решением руководства. Как вы выстроили диалог и к чему это привело?": {
+            "en": "Describe a situation when you disagreed with a management decision. How did you build the dialogue and what was the outcome?",
+            "uz": "Rahbariyat qarori bilan rozi bo‘lmagan vaziyatni tasvirlab bering. Suhbatni qanday boshladingiz va natijasi qanday bo‘ldi?"
+        },
+        "Как вы понимаете 'здоровую корпоративную культуру'? Какие сигналы для вас говорят о том, что в компании с этим есть проблемы?": {
+            "en": "What does a “healthy corporate culture” mean to you? What signals tell you that a company has problems with it?",
+            "uz": "“Sog‘lom korporativ madaniyat”ni siz qanday tushunasiz? Qaysi belgilar kompaniyada bu borada muammolar borligini ko‘rsatadi?"
+        },
+        "Как вы относитесь к удалённому формату работы по сравнению с офисным? В чём плюсы и минусы для вас лично?": {
+            "en": "How do you feel about remote work compared to office work? What are the pros and cons for you personally?",
+            "uz": "Masofaviy ishga ofis ishiga nisbatan qanday qaraysiz? Siz uchun shaxsiy jihatdan afzalliklari va kamchiliklari nimalar?"
+        },
+        "Что помогает вам сохранять мотивацию и вовлечённость в долгосрочных проектах компании?": {
+            "en": "What helps you maintain motivation and engagement in the company’s long-term projects?",
+            "uz": "Kompaniyaning uzoq muddatli loyihalarida motivatsiya va ishtirokingizni saqlab qolishga nima yordam beradi?"
+        },
+        "Представьте, что вам не до конца понятна стратегия компании. Какие шаги вы предпримете, чтобы лучше её понять?": {
+            "en": "Imagine you do not fully understand the company’s strategy. What steps would you take to understand it better?",
+            "uz": "Tasavvur qiling, kompaniya strategiyasini to‘liq tushunmaysiz. Uni yaxshiroq tushunish uchun qanday qadamlar tashlaysiz?"
+        },
         
         # Topic names
         "python": {"uz": "Python"},
