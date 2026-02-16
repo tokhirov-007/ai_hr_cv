@@ -430,3 +430,166 @@ tr:hover {
         transform: translateY(0);
     }
 }
+
+/* =========================================
+   RESPONSIVE DESIGN (Mobile & Tablet)
+   ========================================= */
+
+/* Global Box Sizing Fix */
+* {
+    box-sizing: border-box;
+}
+
+/* 1. Mobile & Small Tablets (max-width: 768px) */
+@media screen and (max-width: 768px) {
+    
+    /* --- General Layout --- */
+    body {
+        font-size: 14px; /* Slightly smaller base font */
+    }
+
+    .glass-container {
+        padding: 10px;
+        align-items: flex-start; /* Move content to top on mobile */
+        padding-top: 40px;
+    }
+
+    .step-card {
+        padding: 20px; /* Reduce padding */
+        max-width: 100%;
+        border-radius: 16px;
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Smaller headings */
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    /* --- Form Elements --- */
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    select,
+    textarea {
+        padding: 10px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    .btn {
+        padding: 12px;
+        font-size: 0.95rem;
+    }
+
+    /* --- Admin Panel --- */
+    .admin-body {
+        flex-direction: column; /* Stack sidebar and main content */
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        height: auto;
+        padding: 15px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        z-index: 10;
+    }
+
+    .admin-sidebar h2 {
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        display: inline-block;
+    }
+    
+    /* Determine if we want a toggle menu or just list categories horizontally */
+    .admin-sidebar nav ul {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+    }
+
+    .admin-sidebar li {
+        white-space: nowrap;
+        margin-bottom: 0;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .admin-main {
+        padding: 15px;
+        height: auto;
+        overflow: visible; /* Let the page scroll naturally */
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .lang-switcher {
+        align-self: flex-end;
+    }
+
+    /* --- Tables (Horizontal Scroll) --- */
+    .candidate-list {
+        overflow-x: auto; /* Enable horizontal scroll for table */
+        border-radius: 8px;
+    }
+
+    table {
+        min-width: 600px; /* Ensure table has enough width to display columns properly */
+    }
+
+    th, td {
+        padding: 10px; /* Compact padding */
+        font-size: 0.8rem;
+    }
+    
+    .score-cell {
+        font-size: 0.9rem;
+    }
+
+    /* --- Modal --- */
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+        margin: 10px;
+    }
+
+    .modal-header {
+        padding: 15px;
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+}
+
+/* 2. Extra Small Devices (max-width: 480px) */
+@media screen and (max-width: 480px) {
+    .step-card {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    /* Stack buttons if they are side-by-side (though currently they are block) */
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .file-upload {
+        text-align: center;
+    }
+}
