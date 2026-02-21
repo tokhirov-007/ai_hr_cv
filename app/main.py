@@ -69,8 +69,18 @@ async def lifespan(app: FastAPI):
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="AI HR System - Complete", version="6.0", lifespan=lifespan)
+
+# CORS Middleware for local network access (Permissive/Disabled restriction)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False, # Must be False for allow_origins=["*"]
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
@@ -146,6 +156,9 @@ async def analyze_cv(
         result_dict = result.dict()
         result_dict["cv_path"] = f"uploads/{perm_filename}"
         return result_dict
+    except ValueError as ve:
+        # Expected validation error
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -569,6 +582,7 @@ async def update_session_status(
         raise HTTPException(status_code=500, detail="Session Manager not initialized")
     
     try:
+        print(f"[ADMIN_LOG] Updating session {session_id} to {internal_status}/{public_status} by {hr_id}")
         await session_manager.update_status(
             session_id=session_id,
             new_internal=internal_status,

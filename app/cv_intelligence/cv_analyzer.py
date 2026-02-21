@@ -13,19 +13,66 @@ class CVAnalyzer:
         self.mapper = SkillMapper(model_name=settings.TRANSFORMER_MODEL)
         print("CV Analyzer ready.")
 
+    def _validate_resume(self, text: str) -> bool:
+        """
+        Validates if the provided text looks like a resume.
+        Checked markers:
+        - Presence of typical headings (Work experience, Skills, Education)
+        - Contact information patterns (email, phone)
+        - Date patterns (years)
+        - Minimum content length and keyword density
+        """
+        if not text or len(text.strip()) < 100:
+            return False
+
+        text_lower = text.lower()
+        
+        # 1. Essential Resume Section Markers (RU, UZ, EN)
+        resume_markers = [
+            "experience", "work history", "employment", "projects", "education", "skills", "technologies", "certificates", "languages", "summary", "profile",
+            "опыт работы", "образование", "навыки", "технологии", "проекты", "курсы", "сертификаты", "о себе", "контакты", "личные данные",
+            "ish tajribasi", "ma'lumoti", "ko'nikmalar", "loyihalar", "kurslar", "sertifikatlar", "til", "aloqa"
+        ]
+        
+        marker_count = sum(1 for m in resume_markers if m in text_lower)
+        
+        # 2. Contact Info Check
+        has_email = bool(re.search(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text))
+        has_phone = bool(re.search(r'\+?\d{9,15}', text))
+        
+        # 3. Date Pattern Check (Finding potential years like 2018, 2022)
+        has_years = bool(re.search(r'\b(19|20)\d{2}\b', text))
+
+        # Scoring heuristics
+        validation_score = 0
+        if marker_count >= 3: validation_score += 40
+        if marker_count >= 1: validation_score += 10
+        if has_email: validation_score += 20
+        if has_phone: validation_score += 20
+        if has_years: validation_score += 20
+        
+        # If the score is too low, it's likely not a resume
+        return validation_score >= 40
+
     def analyze(self, file_path: str) -> CVAnalysisResult:
         """
         Orchestrates the CV analysis process:
         1. Parse text from file
-        2. Extract explicit skills and semantic candidates
-        3. Map candidates to inferred skills
-        4. Return structured result
+        2. Validate if it's a resume
+        3. Extract explicit skills and semantic candidates
+        4. Map candidates to inferred skills
+        5. Return structured result
         """
         # 1. Parse Text
         print(f"Parsing file: {file_path}")
         raw_text = self.parser.parse(file_path)
         
-        # 2. Extract Skills
+        # 2. Validate Resume
+        if not self._validate_resume(raw_text):
+            print(f"[VALIDATION_FAIL] File {file_path} does not look like a resume.")
+            raise ValueError("The uploaded file does not look like a professional resume. Please provide a valid CV.")
+
+        # 3. Extract Skills
         print("Extracting skills...")
         extraction_result = self.extractor.extract(raw_text)
         explicit_skills = extraction_result["explicit"]

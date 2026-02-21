@@ -5,9 +5,12 @@ from app.bot.schemas import HRAction
 import aiohttp
 import logging
 
+import os
+
 logger = logging.getLogger(__name__)
 
-BACKEND_URL = "http://localhost:8000"
+# Configurable backend URL for cross-device support
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 router = Router()
 permissions = BotPermissions()

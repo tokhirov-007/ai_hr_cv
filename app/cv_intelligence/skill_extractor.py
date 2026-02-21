@@ -12,20 +12,22 @@ class SkillExtractor:
         print(f"Loading Spacy model '{model}'...")
         self.nlp = spacy.load(model)
 
-        # Extended explicit skills list (Common Tech Stack)
+        # Extended explicit skills list (Common Tech Stack) - Multilingual
         self.common_skills = {
             # Languages
-            "python", "javascript", "typescript", "java", "c++", "c#", "go", "rust", "php", "ruby", "swift", "kotlin",
+            "python", "пайтон", "питон", "piton", "payton",
+            "javascript", "джаваскрипт", "js", "typescript", "тайпскрипт", "ts",
+            "java", "джава", "c++", "c#", "go", "golang", "rust", "раст", "php", "ruby", "swift", "kotlin",
             # Frontend
-            "react", "vue", "angular", "svelte", "next.js", "nuxt.js", "html", "css", "sass", "less", "tailwind",
+            "react", "реактор", "реакт", "vue", "angular", "ангуляр", "svelte", "next.js", "nuxt.js", "html", "css", "sass", "less", "tailwind",
             # Backend
-            "node.js", "express", "nest.js", "django", "flask", "fastapi", "spring boot", "laravel", "rails", ".net",
+            "node.js", "express", "nest.js", "django", "джанго", "flask", "фласк", "fastapi", "фастапи", "spring boot", "laravel", "rails", ".net",
             # Data / AI
             "sql", "postgresql", "mysql", "mongodb", "redis", "elasticsearch", "cassandra",
-            "machine learning", "deep learning", "nlp", "computer vision", "tensorflow", "pytorch",
+            "machine learning", "ml", "deep learning", "dl", "nlp", "computer vision", "tensorflow", "pytorch",
             "scikit-learn", "pandas", "numpy", "opencv", "llm", "transformers", "hugging face",
             # DevOps / Cloud
-            "docker", "kubernetes", "aws", "azure", "gcp", "terraform", "ansible", "jenkins", "gitlab ci", "circleci",
+            "docker", "докер", "kubernetes", "k8s", "aws", "azure", "gcp", "terraform", "ansible", "jenkins", "gitlab ci", "circleci",
             "git", "linux", "bash", "powershell",
             # Architecture / Concepts
             "rest api", "graphql", "grpc", "microservices", "event-driven architecture", "tdd", "bdd",
@@ -39,46 +41,61 @@ class SkillExtractor:
         if not text:
             return {"explicit": [], "candidates": []}
 
-        doc = self.nlp(text)
+        # Normalize text for better extraction
+        text_clean = text.lower()
+        doc = self.nlp(text_clean)
         
-        explicit_skills = self._find_explicit_skills(text)
+        explicit_skills = self._find_explicit_skills(text_clean)
         
-        # Extract Noun Chunks for semantic mapping (e.g. "modern web frameworks")
-        # Filter: 
-        # 1. 2-5 words (excludes simple single words already caught or too long sentences)
-        # 2. Not purely stop words
         candidates = []
         for chunk in doc.noun_chunks:
-            clean_chunk = chunk.text.strip().lower()
+            clean_chunk = chunk.text.strip()
             word_count = len(clean_chunk.split())
             
             if 1 <= word_count <= 5 and clean_chunk not in explicit_skills:
-                candidates.append(chunk.text.strip())
+                candidates.append(clean_chunk)
 
+        # Return skills, ensuring they are always in their canonical form
         return {
-            "explicit": list(explicit_skills),
-            "candidates": list(set(candidates)) # Deduplicate
+            "explicit": sorted(list(explicit_skills)),
+            "candidates": list(set(candidates))
         }
 
     def _find_explicit_skills(self, text: str) -> Set[str]:
         found = set()
         text_lower = text.lower()
         
+        # Mapping for normalization - Standard Tech Names (Canonical English)
+        # Using explicit strings to avoid any encoding mixup
+        normalization_map = {
+            "пайтон": "python", "питон": "python", "piton": "python", "payton": "python",
+            "джаваскрипт": "javascript", "js": "javascript",
+            "тайпскрипт": "typescript", "ts": "typescript",
+            "джава": "java", "ячми": "java", # accidental RU layout for 'java'
+            "раст": "rust",
+            "реактор": "react", "реакт": "react",
+            "ангуляр": "angular",
+            "джанго": "django", "джанго": "django",
+            "фласк": "flask",
+            "фастапи": "fastapi",
+            "докер": "docker", "контейнеризация": "docker",
+            "k8s": "kubernetes", "кубернетес": "kubernetes",
+            "ml": "machine learning", "дл": "deep learning", "dl": "deep learning",
+            "с++": "c++", "с#": "c#", # Cyrillic 'c'
+            "гит": "git", "гитхаб": "git"
+        }
+        
         for skill in self.common_skills:
-            # Handle special characters in skills (C++, C#, .js)
-            # We escape the skill for regex, but we must be careful with word boundaries
-            
             pattern = None
             if any(c in skill for c in "+#."):
-                # For C++, .NET, Node.js - exact substring match usually works better than naive ID regex
-                # but we want to avoid "node.json" matching "node.js" if possible. 
-                # Let's use simple boundary checks manually or regex with escape.
                 pattern = re.escape(skill)
             else:
-                # Strict word boundary for normal words "java", "go" (avoid "mongo")
                 pattern = r'\b' + re.escape(skill) + r'\b'
             
             if re.search(pattern, text_lower):
-                found.add(skill)
+                # Standardize to canonical name if it exists in map, else use skill itself
+                # CRITICAL: We look up the 'skill' as defined in self.common_skills
+                canonical = normalization_map.get(skill.lower(), skill)
+                found.add(canonical)
                 
         return found

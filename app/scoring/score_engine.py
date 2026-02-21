@@ -10,6 +10,67 @@ class ScoreEngine:
     Combines technical evaluation, integrity, and behavioral data.
     """
 
+    def _is_non_answer(self, text: str) -> bool:
+        """
+        Detects if an answer is 'gibberish', 'random text', or 'I don't know' style answers.
+        Returns True if the answer should receive 0 points.
+        """
+        if not text or len(text.strip()) < 2:
+            return True
+            
+        text_lower = text.lower().strip()
+        
+        # 1. Check for repetitive random characters (e.g., "aaaaa", "asdfgh")
+        # Very short repetitive strings or keyboard mashes
+        if re.match(r'^(.)\1+$', text_lower): # All same characters like "aaaa"
+            return True
+            
+        # 2. Check for "I don't know" style phrases in RU, UZ, EN
+        don_t_know_phrases = [
+            # EN
+            "don't know", "dont know", "i do not know", "no idea", "not sure", "forgot", "can't remember",
+            "random", "idk", "nothing", "none",
+            # RU
+            "не знаю", "не припомню", "не помню", "без понятия", "забыл", "ничего", "пусто",
+            "рандом", "флоп", "аа", "ээ", "хмм", "не могу сказать", "не уверен", "сложно сказать",
+            "тд", "т.д.", "и т.д.", "итп", "и т.п.", "хз", "чо", "че", "хх", "йй", "фыва",
+            # UZ
+            "bilmayman", "eslolmayman", "yodimda yo'q", "tushunmadim", "bilmadim", "unutdim", "t.h", "va h.k", "yo'q"
+        ]
+        
+        for phrase in don_t_know_phrases:
+            if phrase in text_lower:
+                # If it's a very short answer or contains a strong indicator like 'рандом' or 'не знаю'
+                if len(text_lower) < len(phrase) + 15 or phrase in ["рандом", "не знаю", "не помню", "don't know", "bilmayman"]:
+                    return True
+
+        # 3. Random gibberish (very low vowel ratio or strange patterns)
+        if len(text_lower) > 5:
+            vowels_ru = "аеёиоуыэюя"
+            vowels_en = "aeiouy" # Added 'y' for keyboard mashes like qwerty
+            vowels_uz = "aeiou'o'" 
+            vowels = vowels_ru + vowels_en + vowels_uz
+            vowel_count = sum(1 for char in text_lower if char in vowels)
+            
+            # If vowel ratio is extremely low (< 10%)
+            if vowel_count / len(text_lower) < 0.1:
+                return True
+                
+            # Keyboard rows
+            keyboard_rows = ["qwertyuiop", "asdfghjkl", "zxcvbnm", "йцукенгшщз", "фывапролдж", "ячсмитьбю"]
+            for row in keyboard_rows:
+                if row in text_lower or text_lower in row and len(text_lower) > 3:
+                    return True
+
+            # Word repetition check (e.g., "blabla blabla blabla")
+            words = text_lower.split()
+            if len(words) > 3:
+                unique_words = set(words)
+                if len(unique_words) / len(words) < 0.4: # Over 60% repetition
+                    return True
+                
+        return False
+
     def calculate_technical_scores(self, summary: SessionSummary, questions: List[Dict]) -> Dict[str, float]:
         """
         Simulate technical scoring by checking for technical keywords 
@@ -31,6 +92,13 @@ class ScoreEngine:
                 problem_solving_scores.append(0.0)
                 continue
 
+            # NEW: CHECK FOR NON-ANSWERS (gibberish/random/I don't know)
+            if self._is_non_answer(answer.answer_text):
+                print(f"[SCORE_LOG] why_score_zero=True: Non-answer detected for Question {answer.question_id}: '{answer.answer_text}'")
+                technical_scores.append(0.0)
+                problem_solving_scores.append(0.0)
+                continue
+
             # 1. Knowledge Score: Topic matching
             matches = 0
             for topic in expected:
@@ -38,7 +106,7 @@ class ScoreEngine:
                     matches += 1
             
             # Base score from topics
-            knowledge_base = (matches / len(expected)) * 100 if expected else 50
+            knowledge_base = (matches / len(expected)) * 100 if expected else 0 # CHANGED: No free 50 pts
             
             # Expanded Technical Keywords (RU/UZ/EN)
             technical_keywords = [
@@ -48,18 +116,18 @@ class ScoreEngine:
                 "deploy", "ci/cd", "testing", "unit", "integration", "rest", "graphql", "sql", "nosql",
                 # RU
                 "реализация", "производительность", "сложность", "архитектура", "паттерн", "логика", "база",
-                "интерфейс", "класс", "объект", "функция", "метод", "асинхрон", "поток", "деплой",
+                "интерфеис", "класс", "объект", "функция", "метод", "асинхрон", "поток", "деплой",
                 "тестирование", "юнит", "интеграция", "рест", "sql", "nosql", "данные", "сервер", "клиент",
                 "оптимизация", "кэширование", "безопасность", "авторизация", "аутентификация",
+                "пайтон", "питон", "программирование", "разработка", "код", "структура", "алгоритм",
                 # UZ
                 "amalga oshirish", "unumdorlik", "murakkablik", "arxitektura", "andoza", "mantiq", "ma'lumotlar",
                 "interfeys", "sinf", "obyekt", "funktsiya", "usul", "asinxron", "oqim", "joylashtirish",
                 "sinash", "birlik", "integratsiya", "rest", "sql", "nosql", "server", "mijoz",
-                "optimallashtirish", "keshlash", "xavfsizlik", "tizim", "dastur"
+                "optimallashtirish", "keshlash", "xavfsizlik", "tizim", "dastur", "algoritm", "kod"
             ]
             
             # Length Heuristic (Smart Grading)
-            # If answer is detailed (>20 words) AND has at least some relevance, give good score
             word_count = len(answer.answer_text.split())
             length_score = 0
             
@@ -67,16 +135,49 @@ class ScoreEngine:
             keyword_hits = sum(1 for word in technical_keywords if word in answer.answer_text.lower())
             
             if word_count > 20: 
-                # Require at least 1 keyword or topic match to get full length bonus
-                if matches > 0 or keyword_hits > 0:
-                    length_score = 70 # Good base for detailed RELEVANT answer
+                if matches > 0 or keyword_hits > 2: # Stricter
+                    length_score = 70 
                 else:
-                    length_score = 40 # Long but irrelevant (gibberish/water)
+                    length_score = 0 
             elif word_count > 10:
-                length_score = 50
+                if matches > 0 or keyword_hits > 1:
+                    length_score = 30 
+                else:
+                    length_score = 0 
             
             # Keyword Bonus
             keyword_hits = sum(1 for word in technical_keywords if word in answer.answer_text.lower())
+            
+            # STRICTNESS REFINEMENT: Calculate "Junk Density"
+            # If the answer contains keywords BUT is mostly random chars/junk, penalize it.
+            # We use \w to include all language characters (RU, UZ, EN).
+            junk_chars = re.findall(r'[^\w\s.,?!:;()\-]', answer.answer_text)
+            junk_ratio = len(junk_chars) / len(answer.answer_text) if answer.answer_text else 0
+            
+            # Detect "word mashes" like "python asdfgh" or "js ffff"
+            is_keyword_plus_junk = False
+            if word_count < 20: # Increased threshold for safety
+                # check for gibberish words (long words with extremely low vowel ratio)
+                # We include common RU/UZ vowels
+                vowels_all = "aeiouyаеёиоуыэюя"
+                has_gibberish = any(len(w) > 5 and (sum(1 for c in w.lower() if c in vowels_all) / len(w) < 0.1) for w in answer.answer_text.split())
+                
+                # If too many very short words (1-2 chars) that aren't common prepositions
+                # RU: я, и, в, на, с, а, но, у, к, за
+                # UZ: va, bu, u, va, bo'lsa
+                common_short = {"я", "и", "в", "на", "с", "а", "но", "у", "к", "за", "от", "до", "по", "об", "va", "bu", "u", "da", "ni", "ni", "ga", "of", "in", "to", "is", "a", "an", "the", "it", "on"}
+                very_short_words = [w for w in answer.answer_text.split() if len(w) <= 2 and w.lower() not in common_short]
+                
+                # REFINED RULE: triggers if high junk ratio OR has gibberish OR too many random short words in a very short answer
+                if junk_ratio > 0.4 or has_gibberish or (len(very_short_words) > 3 and word_count < 7):
+                    is_keyword_plus_junk = True
+            
+            if is_keyword_plus_junk:
+                print(f"[SCORE_LOG] policy=StrictPenalty: Junk-mixed answer detected for Q{answer.question_id}: '{answer.answer_text}'")
+                technical_scores.append(0.0)
+                problem_solving_scores.append(0.0)
+                continue
+
             keyword_bonus = min(30, keyword_hits * 5)
             
             # Combine methods: take max of (Topic Match OR Length Heuristic) + Bonus
@@ -124,10 +225,10 @@ class ScoreEngine:
         """
         # Fallback: if no CV skills found (parsing error), assume match to avoid penalizing candidate
         if not cv_skills: 
-            return 100.0
+            return 0.0 # CHANGED: No free points if no skills in resume
             
         if not questions:
-            return 50.0
+            return 0.0 # CHANGED: No free points
             
         interview_skills = set()
         for q in questions:
@@ -190,6 +291,10 @@ class ScoreEngine:
         confidence = breakdown.problem_solving_score
         
         # Formula: Each contributes ~33.3 points to max 100
+        # CRITICAL: If answers_quality is 0, the overall score should be capped or zeroed.
+        if answers_quality < 5:
+            return 0
+            
         final = (
             (skills_match * 0.34) +
             (answers_quality * 0.33) +

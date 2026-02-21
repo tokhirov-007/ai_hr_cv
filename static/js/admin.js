@@ -297,16 +297,31 @@ function showAIReport(sessionId) {
     if (needsGeneration) {
         const t = adminTranslations[adminLang] || adminTranslations.en;
         content.innerHTML = `<div style="padding:20px; opacity:0.85;">${t.ai_loading}</div>`;
-        Promise.resolve()
-            .then(() => fetch(`/analyze-integrity/${sessionId}`, { method: 'POST' }))
-            .then(() => fetch(`/generate-recommendation/${sessionId}`, { method: 'POST' }))
-            .then(() => loadCandidates())
-            .then(() => showAIReport(sessionId))
-            .catch(err => {
-                console.error(err);
-                content.innerHTML = `<div style="padding:20px; color:#ff6b6b;">${t.ai_failed}</div>`;
-                document.getElementById('qa-modal').classList.remove('hidden');
-            });
+
+        async function runGeneration() {
+            try {
+                const res1 = await fetch(`/analyze-integrity/${sessionId}`, { method: 'POST' });
+                if (!res1.ok) {
+                    const errTxt = await res1.text();
+                    throw new Error(`Step 1 (Integrity) failed: ${res1.status} ${errTxt}`);
+                }
+
+                const res2 = await fetch(`/generate-recommendation/${sessionId}`, { method: 'POST' });
+                if (!res2.ok) {
+                    const errTxt = await res2.text();
+                    throw new Error(`Step 2 (Recommendation) failed: ${res2.status} ${errTxt}`);
+                }
+
+                await loadCandidates();
+                showAIReport(sessionId);
+            } catch (err) {
+                console.error("AI Generation Error:", err);
+                content.innerHTML = `<div style="padding:20px; color:#ff6b6b;">${t.ai_failed}<br><small>${err.message}</small></div>`;
+                alert(`AI Analysis Error: ${err.message}`);
+            }
+        }
+
+        runGeneration();
         document.getElementById('qa-modal').classList.remove('hidden');
         return;
     }
@@ -382,13 +397,18 @@ function closeModal() {
 async function updateStatus(sessionId, status) {
     const t = adminTranslations[adminLang];
     try {
-        await fetch(`/update-session-status/${sessionId}?internal_status=${status}&public_status=${status}`, {
+        const res = await fetch(`/update-session-status/${sessionId}?internal_status=${status}&public_status=${status}`, {
             method: 'POST'
         });
+        if (!res.ok) {
+            const errTxt = await res.text();
+            throw new Error(`${res.status}: ${errTxt}`);
+        }
         alert(t.update_success);
         loadCandidates();
     } catch (error) {
         console.error("Failed to update status:", error);
+        alert(`Failed to update status: ${error.message}`);
     }
 }
 
