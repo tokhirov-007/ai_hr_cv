@@ -16,43 +16,62 @@ class CVAnalyzer:
     def _validate_resume(self, text: str) -> bool:
         """
         Validates if the provided text looks like a resume.
-        Checked markers:
-        - Presence of typical headings (Work experience, Skills, Education)
-        - Contact information patterns (email, phone)
-        - Date patterns (years)
-        - Minimum content length and keyword density
+        Diagnostic logging added to help debug remote access issues and unexpected rejections.
         """
-        if not text or len(text.strip()) < 100:
+        if not text:
+            print("[VALIDATION_DEBUG] Empty text provided.")
+            return False
+
+        char_count = len(text.strip())
+        if char_count < 50:
+            print(f"[VALIDATION_DEBUG] Text too short: {char_count} chars.")
             return False
 
         text_lower = text.lower()
         
         # 1. Essential Resume Section Markers (RU, UZ, EN)
         resume_markers = [
-            "experience", "work history", "employment", "projects", "education", "skills", "technologies", "certificates", "languages", "summary", "profile",
-            "опыт работы", "образование", "навыки", "технологии", "проекты", "курсы", "сертификаты", "о себе", "контакты", "личные данные",
-            "ish tajribasi", "ma'lumoti", "ko'nikmalar", "loyihalar", "kurslar", "sertifikatlar", "til", "aloqa"
+            "experience", "work history", "employment", "projects", "education", "skills", "technologies", "certificates", "languages", "summary", "profile", "cv", "resume", "curriculum vitae", "university", "college", "job", "career", "training",
+            "опыт работы", "образование", "навыки", "технологии", "проекты", "курсы", "сертификаты", "о себе", "контакты", "личные данные", "резюме", "телефон", "почта", "разработка", "работа",
+            "ish tajribasi", "ma'lumoti", "ko'nikmalar", "loyihalar", "kurslar", "sertifikatlar", "til", "aloqa", "rabota", "telefon", "manzil"
         ]
         
-        marker_count = sum(1 for m in resume_markers if m in text_lower)
+        found_markers = [m for m in resume_markers if m in text_lower]
+        marker_count = len(found_markers)
         
         # 2. Contact Info Check
         has_email = bool(re.search(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text))
         has_phone = bool(re.search(r'\+?\d{9,15}', text))
         
-        # 3. Date Pattern Check (Finding potential years like 2018, 2022)
+        # 3. Date Pattern Check
         has_years = bool(re.search(r'\b(19|20)\d{2}\b', text))
 
-        # Scoring heuristics
+        # Scoring heuristics (Threshold = 20)
         validation_score = 0
-        if marker_count >= 3: validation_score += 40
-        if marker_count >= 1: validation_score += 10
-        if has_email: validation_score += 20
-        if has_phone: validation_score += 20
-        if has_years: validation_score += 20
         
-        # If the score is too low, it's likely not a resume
-        return validation_score >= 40
+        # Contact info is VERY strong signal
+        if has_email or has_phone:
+            validation_score += 20
+        
+        if marker_count >= 2: validation_score += 20
+        elif marker_count >= 1: validation_score += 10
+        
+        if has_years: validation_score += 10
+
+        # Special check for "fairy tales" (Long text with low markers)
+        if char_count > 3000 and marker_count < 3:
+            print(f"[VALIDATION_DEBUG] Detected long document ({char_count}) but low marker density ({marker_count}). Potential non-CV.")
+            validation_score -= 15
+
+        # DIAGNOSTIC LOGGING
+        print(f"--- [CV VALIDATION DIAGNOSTICS] ---")
+        print(f"Length: {char_count} chars")
+        print(f"Markers Found ({marker_count}): {found_markers[:10]}{'...' if marker_count > 10 else ''}")
+        print(f"Has Email: {has_email}, Has Phone: {has_phone}, Has Years: {has_years}")
+        print(f"Final Validation Score: {validation_score} (Needed: 20)")
+        print(f"-----------------------------------")
+        
+        return validation_score >= 20
 
     def analyze(self, file_path: str) -> CVAnalysisResult:
         """
